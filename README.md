@@ -1,5 +1,5 @@
 # Modal_Logic_Tableaux_Solver
-A tool to decide satisfiability of modal formulas, and if satisfiable, visualize them.
+A python tool to decide satisfiability of modal formulas, and if satisfiable, visualize them.
 
 This is a work in progress, with the first goal being to achieve this for classical modal logic using the axioms from Minimum Modal Logic K, then adding in different axioms to correspond to frames with different relations (transitivity, reflexivity, etc.) to add functionality for different types of modal logic (using Kripke Semantics for all).
 
