@@ -1,6 +1,10 @@
 import networkx as nx
 import modalparser
+import modalgraph
 import argparse
+from enum import Enum
+
+
 
 if __name == '__main__':
 	parser = argparse.ArgumentParser(description='parsing arguments')
@@ -9,6 +13,11 @@ if __name == '__main__':
 	formula = args.formula
 	parsed_formula = modalparser.parse_formula()
 
-#Input: parsed formula in tuple form
+""" Input: parsed formula in tuple prefix form
+	Each graph world 
+"""
 def perform_graph_tableaux(parsed_formula):
-	
+	MG = ModalGraph()
+	active_graphs = {MG}
+	while active_graphs and 
+

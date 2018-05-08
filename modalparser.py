@@ -10,13 +10,12 @@ class BinaryPred(Enum):
 	AND = '&'
 	OR = '|'
 	IMPL = '>'
-	EQ = '='
 
 class Language:
 	def __init__(self):
 		self.atoms = {ascii_lowercase[char] for char in range(26)} # characters 'a' through 'z'
 		self.unaryPreds = {item.value for item in UnaryPred} # Unary predicates NOT, BOX, and DIAMOND
-		self.binaryPreds = {item.value for item in BinaryPred} # Binary predicates AND, OR, IMPLIES, and EQUALS
+		self.binaryPreds = {item.value for item in BinaryPred} # Binary predicates AND, OR, and IMPLIES
 		self.brackets = {('(', ')'), ('[',']'), ('{','}')} # Accepted brackets for scoping
 
 	def __getitem__(self, symbol):
