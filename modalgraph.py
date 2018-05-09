@@ -7,10 +7,14 @@ import copy
 
 class ModalGraph():
 	def __init__(self, params=[], data=None, MG=None, next_formulas=None, debug=False):
-		if 'r' in params:
-			self.reflexive = True
-		else:
-			self.reflexive = False
+		self.params = params
+		if 'reflexive' in params: self.reflexive = True
+		else: self.reflexive = False
+		if 'symmetric' in params: self.symmetric = True
+		else: self.symmetric = False
+		if 'transitive' in params: self.transitive = True
+		else: self.transitive = False
+
 		if MG:
 			self.nxG = MG.nxG.copy()
 			self.true_at_world = copy.deepcopy(MG.true_at_world)
@@ -20,6 +24,7 @@ class ModalGraph():
 			self.rules_for_children = copy.deepcopy(MG.rules_for_children)
 			self.debug = MG.debug
 			return
+
 		self.nxG = nx.DiGraph(data)
 		self.true_at_world = dict()
 		self.false_at_world = dict()
@@ -49,6 +54,13 @@ class ModalGraph():
 		if self.reflexive:
 			self.nxG.add_edge(world_number, world_number)
 		return world_number
+	
+	def add_edge(self, w1, w2):
+		self.nxG.add_edge(w1, w2)
+		if self.symmetric: self.nxG.add_edge(w2, w1)
+		if self.transitive: 
+			for edge in w1.in_edges():
+					self.nxG.add_edge(edge[0], w2)
 
 
 	""" Sets an atomic proposition to True in the given world
@@ -212,7 +224,7 @@ def split_subformula_in_world(MG, world, next_formulas, subformula, active_graph
 
 def split_formula_over_new_graph(MG, world, next_formulas, subformula, active_graphs, args):
 	if MG.debug: print("Splitting subformula over new graph from " + modalparser.readable_natural_form(subformula) + " to " + modalparser.readable_natural_form(args[0]) + " and " + modalparser.readable_natural_form(args[1]))
-	newMG = ModalGraph(MG=MG, next_formulas=next_formulas)
+	newMG = ModalGraph(MG=MG, params=MG.params, next_formulas=next_formulas)
 	next_formulas[world].append(args[0])
 	newMG.formulas[world].append(args[1])
 	active_graphs.append(newMG)
@@ -226,7 +238,7 @@ def add_new_world_with_subformula(MG, world, next_formulas, subformula, active_g
 	if MG.debug: print("Adding a new world with formula " + str(args[0]))
 	newworld = MG.add_node(args[0], next_formulas)
 	next_formulas[newworld].extend(MG.rules_for_children[world])
-	MG.nxG.add_edge(world, newworld)
+	MG.add_edge(world, newworld)
 
 def enforce_formula_met_by_children(MG, world, next_formulas, subformula, active_graphs, args):
 	if MG.debug: print("Adding a new enforcement rule " + str(args[0]) + " to world " + str(world))
