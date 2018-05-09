@@ -4,9 +4,10 @@ from modalparser import UnaryPred
 from modalparser import BinaryPred
 from enum import Enum
 import copy
+import random
 
 class ModalGraph():
-	def __init__(self, params=[], data=None, MG=None, next_formulas=None, debug=False):
+	def __init__(self, params=[], data=None, MG=None, debug=False):
 		self.params = params
 		if 'reflexive' in params: self.reflexive = True
 		else: self.reflexive = False
@@ -20,9 +21,14 @@ class ModalGraph():
 			self.true_at_world = copy.deepcopy(MG.true_at_world)
 			self.false_at_world = copy.deepcopy(MG.false_at_world)
 			self.next_world_number = MG.next_world_number
-			self.formulas = copy.deepcopy(next_formulas)
+			self.formulas = {i:[] for i in range(self.next_world_number)}
+			for world in self.formulas.keys():
+				self.formulas[world].extend(MG.next_formulas[world])
+				self.formulas[world].extend([subformula for subformula in MG.formulas[world] if subformula not in MG.formulas_processed_this_iter[world]])
+			self.next_formulas = dict()
 			self.rules_for_children = copy.deepcopy(MG.rules_for_children)
 			self.debug = MG.debug
+			if self.debug: print("New graph made with formulas: " + str(self.formulas))
 			return
 
 		self.nxG = nx.DiGraph(data)
@@ -30,6 +36,8 @@ class ModalGraph():
 		self.false_at_world = dict()
 		self.next_world_number = 0
 		self.formulas = dict()
+		self.formulas_processed_this_iter = dict()
+		self.next_formulas = dict()
 		self.rules_for_children = dict()
 		self.debug = debug
 
@@ -41,26 +49,29 @@ class ModalGraph():
 		upon the function's completion.
 		Formula is a parsed prefix form tuple representation of the subformula remaining to be considered in the world
 	"""
-	def add_node(self, formula, next_formulas=None):
+	def add_node(self, formula):
 		world_number = self.next_world_number
 		self.next_world_number += 1
 		self.nxG.add_node(world_number)
 		self.true_at_world[world_number] = set()
 		self.false_at_world[world_number] = set()
-		if next_formulas: 
-			next_formulas[world_number] = [formula]
+		if self.next_formulas: 
+			self.next_formulas[world_number] = [formula]
 		else: self.formulas[world_number] = [formula]
 		self.rules_for_children[world_number] = []
 		if self.reflexive:
-			self.nxG.add_edge(world_number, world_number)
+			self.add_edge(world_number, world_number)
 		return world_number
 	
 	def add_edge(self, w1, w2):
+		if (w1, w2) in [edge for edge in self.nxG.edges()]: return
+		if self.debug: print("Adding edge from world " + str(w1) + " to world " + str(w2) + " and applying the following rules: " + str([modalparser.readable_natural_form(item) for item in self.rules_for_children[w1]]))
+		self.next_formulas[w2].extend(self.rules_for_children[w1])
 		self.nxG.add_edge(w1, w2)
-		if self.symmetric: self.nxG.add_edge(w2, w1)
+		if self.symmetric: self.add_edge(w2, w1)
 		if self.transitive: 
-			for edge in w1.in_edges():
-					self.nxG.add_edge(edge[0], w2)
+			for edge in self.nxG.in_edges(w1):
+					self.add_edge(edge[0], w2)
 
 
 	""" Sets an atomic proposition to True in the given world
@@ -86,7 +97,10 @@ class ModalGraph():
 	""" Returns true if all formulas in all worlds have been processed and have had values assigned
 	"""
 	def is_fully_processed(self):
-		return [True for world, formulas in self.formulas.items() if len(formulas) != 0] == []
+		for n in range(self.next_world_number):
+			if n in self.next_formulas.keys() and self.next_formulas[n]: return False
+			if n in self.formulas.keys() and self.formulas[n]: return False
+		return True
 
 	def is_consistent(self):
 		return [atom not in [self.false_at_world[world] for world in range(self.next_world_number)] for atom in [self.true_at_world[world] for world in range(self.next_world_number)]]
@@ -98,11 +112,13 @@ class ModalGraph():
 		If it did not create any new graphs within this call, that will be an empty list
 	"""
 	def process_all_worlds(self):
+		self.formulas_processed_this_iter = {i:[] for i in range(self.next_world_number)}
 		active_graphs = [self]
-		next_formulas = {i:[] for i in range(self.next_world_number)}
+		self.next_formulas = {i:[] for i in range(self.next_world_number)}
 		for world, world_formulas in self.formulas.items():
 			if self.debug: print("Processing world " + str(world) + " with world formulas " + str(world_formulas))
 			for subformula in world_formulas:
+				self.formulas_processed_this_iter[world].append(subformula)
 				if self.debug: print("Processing subformula " + str(modalparser.readable_natural_form(subformula)))
 				if isinstance(subformula, str): 
 					# subformula at world is reduced to an atomic proposition that must be set to true
@@ -121,14 +137,14 @@ class ModalGraph():
 					elif operator == BinaryPred.OR: action = self.handle_or(subformula, world)
 					elif operator == BinaryPred.IMPL: action = self.handle_implication(subformula, world)
 					else: raise ValueError("Operator " + str(operator) + " is not of a known type")
-					action[0](self, world, next_formulas, subformula, active_graphs, action[1])
+					action[0](self, world, subformula, active_graphs, action[1])
 
 				else: 
 					raise ValueError("Subformula " + str(subformula) + " is not of a known type")
 			
 			if self not in active_graphs: 
 				return active_graphs
-		self.formulas = next_formulas
+		self.formulas = self.next_formulas
 		if self.is_fully_processed(): active_graphs.remove(self)
 		return active_graphs
 
@@ -163,6 +179,15 @@ class ModalGraph():
 
 	def handle_diamond(self, subformula, world):
 		if self.debug: print("Handling diamond of " + str(subformula[1]))
+		if self.nxG.out_edges(world):
+			def comp(MG, world, subformula, active_graphs, args):
+				if MG.debug: print("Trying two possibilities to satisfy <>" + modalparser.readable_natural_form(subformula[1]))
+				if MG.debug: print("Adding a new graph")
+				newMG = ModalGraph(MG=MG, params=MG.params, debug=MG.debug)
+				newMG.formulas[random.choice([edge for edge in MG.nxG.out_edges(world)])[1]].append(args[0])
+				active_graphs.append(newMG)
+				add_new_world_with_subformula(MG, world, subformula, active_graphs, args)
+			return (comp, [subformula[1]])
 		return (add_new_world_with_subformula, [subformula[1]])
 
 	def handle_and(self, subformula, world):
@@ -208,43 +233,42 @@ class ModalGraph():
 		plt.axis('off')
 
 
-def invalidate_graph(MG, world, next_formulas, subformula, active_graphs, args):
+def invalidate_graph(MG, world, subformula, active_graphs, args):
 	if MG.debug: print("Invalidating graph due to contradiction")
 	if MG in active_graphs:
 		active_graphs.remove(MG)
 
-def finished_subformula(MG, world, next_formulas, subformula, active_graphs, args):
+def finished_subformula(MG, world, subformula, active_graphs, args):
 	if MG.debug: print("Finished processing subformula " + modalparser.readable_natural_form(subformula))
 	
 
-def split_subformula_in_world(MG, world, next_formulas, subformula, active_graphs, args):
+def split_subformula_in_world(MG, world,  subformula, active_graphs, args):
 	if MG.debug: print("Splitting subformula within world from " + modalparser.readable_natural_form(subformula) + " to " + modalparser.readable_natural_form(args[0]) + " and " + modalparser.readable_natural_form(args[1]))
-	next_formulas[world].append(args[0])
-	next_formulas[world].append(args[1])
+	MG.next_formulas[world].append(args[0])
+	MG.next_formulas[world].append(args[1])
 
-def split_formula_over_new_graph(MG, world, next_formulas, subformula, active_graphs, args):
+def split_formula_over_new_graph(MG, world, subformula, active_graphs, args):
 	if MG.debug: print("Splitting subformula over new graph from " + modalparser.readable_natural_form(subformula) + " to " + modalparser.readable_natural_form(args[0]) + " and " + modalparser.readable_natural_form(args[1]))
-	newMG = ModalGraph(MG=MG, params=MG.params, next_formulas=next_formulas)
-	next_formulas[world].append(args[0])
+	newMG = ModalGraph(MG=MG, params=MG.params)
+	MG.next_formulas[world].append(args[0])
 	newMG.formulas[world].append(args[1])
 	active_graphs.append(newMG)
 	if MG.debug: print("After split, original graph kept formula " + modalparser.readable_natural_form(next_formulas[world][-1]) + " and new graph handles formula " + modalparser.readable_natural_form(newMG.formulas[world][-1]))
 
-def replace_current_subformula(MG, world, next_formulas, subformula, active_graphs, args):
+def replace_current_subformula(MG, world, subformula, active_graphs, args):
 	if MG.debug: print("Replacing current subformula " + modalparser.readable_natural_form(subformula) + " in world with " + str(args[0]))
-	next_formulas[world].append(args[0])
+	MG.next_formulas[world].append(args[0])
 
-def add_new_world_with_subformula(MG, world, next_formulas, subformula, active_graphs, args):
+def add_new_world_with_subformula(MG, world, subformula, active_graphs, args):
 	if MG.debug: print("Adding a new world with formula " + str(args[0]))
-	newworld = MG.add_node(args[0], next_formulas)
-	next_formulas[newworld].extend(MG.rules_for_children[world])
+	newworld = MG.add_node(args[0])
 	MG.add_edge(world, newworld)
 
-def enforce_formula_met_by_children(MG, world, next_formulas, subformula, active_graphs, args):
+def enforce_formula_met_by_children(MG, world,  subformula, active_graphs, args):
 	if MG.debug: print("Adding a new enforcement rule " + str(args[0]) + " to world " + str(world))
 	MG.rules_for_children[world].append(args[0])
 	for child in [edge[1] for edge in MG.nxG.out_edges(world)]:
-		if MG.debug: print("Applied new enforcement rule to child " + str(child))
-		next_formulas[child].append(args[0])
+		if MG.debug: print("Applied new enforcement rule '" + modalparser.readable_natural_form(args[0]) +"'to child " + str(child))
+		MG.next_formulas[child].append(args[0])
 
 

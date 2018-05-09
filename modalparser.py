@@ -94,7 +94,10 @@ def parse_into_list(formula, debug=False):
 def list_to_tuple(format):
 	formtype = type(format)
 	if formtype == list:
-		return tuple(list_to_tuple(sub) for sub in format)
+		toret = tuple(list_to_tuple(sub) for sub in format)
+		if len(toret) > 3:
+			raise SyntaxError("Use brackets to control scope more precisely")
+		return toret
 	syntax_check(need_one_to_pass=[formtype == str, formtype == tuple, formtype == UnaryPred, formtype == BinaryPred], 
 		show_with_error='Wrong type for ' + str(format))
 	return format
