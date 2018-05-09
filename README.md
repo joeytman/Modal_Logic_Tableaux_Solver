@@ -36,8 +36,8 @@ Well, cool, it's satisfiable. Is it valid on all models on all frames?
 ![Definitely not, as here is a counter-example](https://i.imgur.com/b1oLVDI.png)
 
 The program just provided a counter-example, so it must not be.
-However, what if we check its validity on frames that are reflexive and transitive?
-![Unsurprisingly, there is no way to satisfy the negation of <><>p -> <>p on these frames](https://i.imgur.com/8R5WtNE.png). Unsurprisingly, there is no way to satisfy the negation of <><>p -> <>p on these frames. Hence, we can conclude that <><>p -> <>p is valid in all worlds with reflexive and transitive frames.
+However, what if we search for a counter-example on frames that are reflexive and transitive?
+![Unsurprisingly, there is no way to satisfy the negation of <><>p -> <>p on these frames](https://i.imgur.com/8R5WtNE.png) Unsurprisingly, there is no way to satisfy the negation of <><>p -> <>p on these frames. Hence, we can conclude that <><>p -> <>p is valid in all worlds with reflexive and transitive frames.
 
 Hopefully this gives you a good idea of some use that can be had with this, and please note any bugs you find as I'll do my best to fix them asap.
 
