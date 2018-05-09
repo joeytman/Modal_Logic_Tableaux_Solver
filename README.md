@@ -9,20 +9,35 @@ Note that reflexive arrows are not drawn on the visualization but are still bein
 
 # Instructions:
 1. Install python 3 and the following library dependencies: networkx, matplotlib
+
 2. Download the zip file from this page or clone it through git
+
 3. Navigate within the terminal to the directory you downloaded the files to
-4. From inside the folder, run the following (items within [brackets] are optional:
-        python3 solver.py "<your-modal-formula-here>" [--novis] [--debug] [reflexive | symmetric | transitive]
+
+4. From inside the folder, run the following (items within [brackets] are optional):
+
+       python3 solver.py "<your-modal-formula-here>" [--novis] [--debug] [reflexive | symmetric | transitive]
+        
    When writing the modal formula:
+   
           all lowercase letters are treated as atomic
+          
           "^" or "&" can be used for conjunction
+          
           "|" is for disjunction
+          
           "[]" or "B" are used for box operator
+          
           "<>" or "D" are used for diamond operator
+          
           ">" is used for implications
+          
           "~" is used for negation
+          
   The optional --novis flag makes the program only decide satisfiability of the given formula without visualizing it
+  
   The optional --debug flag prints a verbose output to console as the program runs
+  
   Additionally, you can add any combination (or none) of "reflexive", "symmetric", and "transitive" (no quotes) after your formula and any optional flags in order to impose restrictions on the frame's relations.
   
 # Uses
@@ -36,10 +51,13 @@ Well, cool, it's satisfiable. Is it valid on all models on all frames?
 ![Definitely not, as here is a counter-example](https://i.imgur.com/b1oLVDI.png)
 
 The program just provided a counter-example, so it must not be.
-However, what if we check its validity on frames that are reflexive and transitive?
-![Unsurprisingly, there is no way to satisfy the negation of <><>p -> <>p on these frames](https://i.imgur.com/8R5WtNE.png). Unsurprisingly, there is no way to satisfy the negation of <><>p -> <>p on these frames. Hence, we can conclude that <><>p -> <>p is valid in all worlds with reflexive and transitive frames.
+However, what if we search for a counter-example on frames that are reflexive and transitive?
+![Unsurprisingly, there is no way to satisfy the negation of <><>p -> <>p on these frames](https://i.imgur.com/8R5WtNE.png) Unsurprisingly, there is no way to satisfy the negation of <><>p -> <>p on these frames. Hence, we can conclude that <><>p -> <>p is valid in all worlds with reflexive and transitive frames.
 
 Hopefully this gives you a good idea of some use that can be had with this, and please note any bugs you find as I'll do my best to fix them asap.
 
 # Disclaimer
 If you're a developer reading this and you'd like to use this tool for anything, feel free. If you want to copy all of my code and add it to something you're working on, go for it, just credit me somewhere and drop me a star. 
+
+# Credits
+I want to thank Marcin Cuber for open source-ing his masters thesis, the repo of which can be found [Here](https://github.com/marcincuber). I used a lot of his code for writing the parser for this, which otherwise would have taken me so much longer.
