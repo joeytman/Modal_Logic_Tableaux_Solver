@@ -24,11 +24,12 @@ class ModalGraph():
 			self.formulas = {i:[] for i in range(self.next_world_number)}
 			for world in self.formulas.keys():
 				self.formulas[world].extend(MG.next_formulas[world])
-				self.formulas[world].extend([subformula for subformula in MG.formulas[world] if subformula not in MG.formulas_processed_this_iter[world]])
+				if world in MG.formulas.keys():
+					self.formulas[world].extend([subformula for subformula in MG.formulas[world] if subformula not in MG.formulas_processed_this_iter[world]])
 			self.next_formulas = dict()
 			self.rules_for_children = copy.deepcopy(MG.rules_for_children)
 			self.debug = MG.debug
-			if self.debug: print("New graph made with formulas: " + str(self.formulas))
+			if self.debug: print("New graph made with formulas " + str(self.formulas) + "\nNew graph has enforcement rules: "+ str(self.rules_for_children))
 			return
 
 		self.nxG = nx.DiGraph(data)
@@ -206,7 +207,13 @@ class ModalGraph():
 		if self.debug: print("Handling implication of " + str(modalparser.readable_natural_form(subformula[1])) + " and " + str(modalparser.readable_natural_form(subformula[2])))
 		phi = (UnaryPred.NOT, subformula[1])
 		psi = subformula[2]
-		return (split_formula_over_new_graph, [phi, psi])
+		def twice(MG, world, subformula, active_graphs, args):
+			if self.debug: print("Creating graph trying to satisfy " + modalparser.readable_natural_form((BinaryPred.AND, subformula[1], subformula[2])))
+			newMG = ModalGraph(MG=MG, params=MG.params)
+			newMG.formulas[world].append((BinaryPred.AND, subformula[1], subformula[2]))
+			active_graphs.append(newMG)
+			split_formula_over_new_graph(MG, world, subformula, active_graphs, args)
+		return (twice, [phi, psi])
 
 	def __getitem__(self, world):
 		return self.nodes[world]
@@ -253,7 +260,7 @@ def split_formula_over_new_graph(MG, world, subformula, active_graphs, args):
 	MG.next_formulas[world].append(args[0])
 	newMG.formulas[world].append(args[1])
 	active_graphs.append(newMG)
-	if MG.debug: print("After split, original graph kept formula " + modalparser.readable_natural_form(next_formulas[world][-1]) + " and new graph handles formula " + modalparser.readable_natural_form(newMG.formulas[world][-1]))
+	if MG.debug: print("After split, original graph kept formula " + modalparser.readable_natural_form(MG.next_formulas[world][-1]) + " and new graph handles formula " + modalparser.readable_natural_form(newMG.formulas[world][-1]))
 
 def replace_current_subformula(MG, world, subformula, active_graphs, args):
 	if MG.debug: print("Replacing current subformula " + modalparser.readable_natural_form(subformula) + " in world with " + str(args[0]))

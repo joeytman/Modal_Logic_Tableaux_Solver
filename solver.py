@@ -28,7 +28,7 @@ def perform_graph_tableaux(parsed_formula, params=[], debug=False):
 	for graph in seen_graphs:
 		if graph.is_fully_processed() and graph.is_consistent():
 			valid_solution_graphs.append(graph)
-	print("Finished processing formula, generated " + str(len(valid_solution_graphs)) + " valid graph(s) and generated " + str(len(seen_graphs) - len(valid_solution_graphs)) + " invalid graph(s)")
+	if debug: print("Finished processing formula, generated " + str(len(valid_solution_graphs)) + " valid graph(s) and generated " + str(len(seen_graphs) - len(valid_solution_graphs)) + " invalid graph(s)")
 	return valid_solution_graphs
 
 
@@ -52,5 +52,6 @@ if __name__ == '__main__':
 		for sol_graph in valid_solution_graphs:
 			plt.figure(valid_solution_graphs.index(sol_graph))
 			sol_graph.visualize(plt)
+		
+		print("The given formula '" + args.formula + "' is satisfiable")
 		if not args.novis: plt.show()	
-		else: print("The given formula '" + args.formula + "' is satisfiable")
