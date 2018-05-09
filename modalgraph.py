@@ -66,9 +66,9 @@ class ModalGraph():
 		Returns false if this cause a variable to be set to necessarily true and false
 	"""
 	def set_atom_false(self, world, atom):
-		if world not in self.nodes(): raise KeyError("World " + str(world) + " is not a world")
+		if world not in self.nxG.nodes(): raise KeyError("World " + str(world) + " is not a world")
 		if atom in self.true_at_world[world]: return False
-		false_at_world[world].add(atom)
+		self.false_at_world[world].add(atom)
 		return True
 
 	""" Returns true if all formulas in all worlds have been processed and have had values assigned
