@@ -58,3 +58,6 @@ Hopefully this gives you a good idea of some use that can be had with this, and 
 
 # Disclaimer
 If you're a developer reading this and you'd like to use this tool for anything, feel free. If you want to copy all of my code and add it to something you're working on, go for it, just credit me somewhere and drop me a star. 
+
+# Credits
+I want to thank Marcin Cuber for open source-ing his masters thesis, the repo of which can be found ![Here](https://github.com/marcincuber). I used a lot of his code for writing the parser for this, which otherwise would have taken me so much longer.
