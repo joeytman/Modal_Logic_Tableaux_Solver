@@ -28,7 +28,7 @@ def perform_graph_tableaux(parsed_formula, params=[], debug=False):
 	for graph in seen_graphs:
 		if graph.is_fully_processed() and graph.is_consistent():
 			valid_solution_graphs.append(graph)
-	if debug: print("Finished processing formula, generated " + str(len(valid_solution_graphs)) + " valid graph(s) and generated " + str(len(seen_graphs) - len(valid_solution_graphs)) + " invalid graph(s)")
+	print("Finished processing formula, generated " + str(len(valid_solution_graphs)) + " valid graph(s) and generated " + str(len(seen_graphs) - len(valid_solution_graphs)) + " invalid graph(s)")
 	return valid_solution_graphs
 
 
@@ -43,6 +43,8 @@ if __name__ == '__main__':
 	args = parser.parse_args()
 	formula = args.formula
 	parsed_formula = modalparser.parse_formula(formula)
+	if args.params: print("Determining satisfiability for '" + formula + "' on frames that are: " + " ".join(args.params))
+	else: print("Determining satisfiability for '" + formula + "'")
 	valid_solution_graphs = perform_graph_tableaux(parsed_formula, args.params, args.debug)
 	if not valid_solution_graphs:
 		print("The given formula '" + args.formula + "' is unsatisfiable")

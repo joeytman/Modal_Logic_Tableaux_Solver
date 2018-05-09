@@ -66,7 +66,7 @@ class ModalGraph():
 	def add_edge(self, w1, w2):
 		if (w1, w2) in [edge for edge in self.nxG.edges()]: return
 		if self.debug: print("Adding edge from world " + str(w1) + " to world " + str(w2) + " and applying the following rules: " + str([modalparser.readable_natural_form(item) for item in self.rules_for_children[w1]]))
-		self.next_formulas[w2].extend(self.rules_for_children[w1])
+		if self.next_formulas: self.next_formulas[w2].extend(self.rules_for_children[w1])
 		self.nxG.add_edge(w1, w2)
 		if self.symmetric: self.add_edge(w2, w1)
 		if self.transitive: 
