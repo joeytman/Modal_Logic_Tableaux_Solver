@@ -39,7 +39,7 @@ if __name__ == '__main__':
 	parser.add_argument('formula', type=str, help='The formula to determine satisfiability of')
 	parser.add_argument('--debug', action='store_true', help='If specified, verbose output will be printed to console throughout processing')
 	parser.add_argument('--vis', action='store_true', help='If specified, will visualize all satisfying graphs discovered')
-	parser.add_argument('params', nargs=argparse.REMAINDER, help='Add "r" for reflexivity')
+	parser.add_argument('params', nargs=argparse.REMAINDER, help='Specify any combination of "reflexive", "symmetric", "transitive" to impose them as frame constraints (space separated)')
 	args = parser.parse_args()
 	formula = args.formula
 	parsed_formula = modalparser.parse_formula(formula)
