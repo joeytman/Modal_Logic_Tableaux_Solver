@@ -9,20 +9,35 @@ Note that reflexive arrows are not drawn on the visualization but are still bein
 
 # Instructions:
 1. Install python 3 and the following library dependencies: networkx, matplotlib
+
 2. Download the zip file from this page or clone it through git
+
 3. Navigate within the terminal to the directory you downloaded the files to
-4. From inside the folder, run the following (items within [brackets] are optional:
-        python3 solver.py "<your-modal-formula-here>" [--novis] [--debug] [reflexive | symmetric | transitive]
+
+4. From inside the folder, run the following (items within [brackets] are optional):
+
+       python3 solver.py "<your-modal-formula-here>" [--novis] [--debug] [reflexive | symmetric | transitive]
+        
    When writing the modal formula:
+   
           all lowercase letters are treated as atomic
+          
           "^" or "&" can be used for conjunction
+          
           "|" is for disjunction
+          
           "[]" or "B" are used for box operator
+          
           "<>" or "D" are used for diamond operator
+          
           ">" is used for implications
+          
           "~" is used for negation
+          
   The optional --novis flag makes the program only decide satisfiability of the given formula without visualizing it
+  
   The optional --debug flag prints a verbose output to console as the program runs
+  
   Additionally, you can add any combination (or none) of "reflexive", "symmetric", and "transitive" (no quotes) after your formula and any optional flags in order to impose restrictions on the frame's relations.
   
 # Uses
