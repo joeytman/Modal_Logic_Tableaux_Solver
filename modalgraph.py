@@ -6,7 +6,11 @@ from enum import Enum
 import copy
 
 class ModalGraph():
-	def __init__(self, data=None, MG=None, next_formulas=None, debug=False):
+	def __init__(self, params=[], data=None, MG=None, next_formulas=None, debug=False):
+		if 'r' in params:
+			self.reflexive = True
+		else:
+			self.reflexive = False
 		if MG:
 			self.nxG = MG.nxG.copy()
 			self.true_at_world = copy.deepcopy(MG.true_at_world)
@@ -42,6 +46,8 @@ class ModalGraph():
 			next_formulas[world_number] = [formula]
 		else: self.formulas[world_number] = [formula]
 		self.rules_for_children[world_number] = []
+		if self.reflexive:
+			self.nxG.add_edge(world_number, world_number)
 		return world_number
 
 

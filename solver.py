@@ -10,9 +10,9 @@ import matplotlib.pyplot as plt
 """ Input: parsed formula in tuple prefix form
 	Each graph world 
 """
-def perform_graph_tableaux(parsed_formula, debug=False):
+def perform_graph_tableaux(parsed_formula, params=[], debug=False):
 	if debug: print("Searching for satisfying model for parsed formula: " + str(parsed_formula))
-	MG = mg.ModalGraph(debug=debug)
+	MG = mg.ModalGraph(params=params, debug=debug)
 	MG.add_node(parsed_formula)
 	active_graphs = [MG]
 	seen_graphs = [MG]
@@ -39,10 +39,11 @@ if __name__ == '__main__':
 	parser.add_argument('formula', type=str, help='The formula to determine satisfiability of')
 	parser.add_argument('--debug', action='store_true', help='If specified, verbose output will be printed to console throughout processing')
 	parser.add_argument('--vis', action='store_true', help='If specified, will visualize all satisfying graphs discovered')
+	parser.add_argument('params', nargs=argparse.REMAINDER, help='Add "r" for reflexivity')
 	args = parser.parse_args()
 	formula = args.formula
 	parsed_formula = modalparser.parse_formula(formula)
-	valid_solution_graphs = perform_graph_tableaux(parsed_formula, args.debug)
+	valid_solution_graphs = perform_graph_tableaux(parsed_formula, args.params, args.debug)
 	if not valid_solution_graphs:
 		print("The given formula '" + args.formula + "' is unsatisfiable")
 	else:
