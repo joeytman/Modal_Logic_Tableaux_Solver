@@ -41,9 +41,9 @@ Note that reflexive arrows are not drawn on the visualization but are still bein
   Additionally, you can add any combination (or none) of "reflexive", "symmetric", and "transitive" (no quotes) after your formula and any optional flags in order to impose restrictions on the frame's relations.
   
 # Uses
-There are quite a few uses of this program. One such use is to prove formulas -- if you want to prove `phi` on some frame, simply determine whether ~`phi` is satisfiable on that frame, as if it is not, then it must hold that `phi` is valid on all models based on that frame.
+There are quite a few uses of this program. One such use is to prove formulas -- if you want to prove `p` on some frame, simply determine whether `~p` is satisfiable on that frame, as if it is not, then it must hold that `p` is valid on all models based on that frame.
 
-For instance, let's look at this instance of the 4 axiom, pretending we don't know anything about it: <><>p -> <>p
+For instance, let's look at this instance of the 4 axiom, pretending we don't know anything about it: `<><>p -> <>p`
 Maybe we want to start by seeing if this is satisfiable on unrestricted frames...
 ![Just enter this and see some examples](https://i.imgur.com/vW5AHNT.png)
 
@@ -52,7 +52,7 @@ Well, cool, it's satisfiable. Is it valid on all models on all frames?
 
 The program just provided a counter-example, so it must not be.
 However, what if we search for a counter-example on frames that are reflexive and transitive?
-![Unsurprisingly, there is no way to satisfy the negation of <><>p -> <>p on these frames](https://i.imgur.com/8R5WtNE.png) Unsurprisingly, there is no way to satisfy the negation of <><>p -> <>p on these frames. Hence, we can conclude that <><>p -> <>p is valid in all worlds with reflexive and transitive frames.
+![Unsurprisingly, there is no way to satisfy the negation of <><>p -> <>p on these frames](https://i.imgur.com/8R5WtNE.png) Unsurprisingly, there is no way to satisfy the negation of `<><>p -> <>p` on these frames. Hence, we can conclude that `<><>p -> <>p` is valid in all worlds with reflexive and transitive frames.
 
 Hopefully this gives you a good idea of some use that can be had with this, and please note any bugs you find as I'll do my best to fix them asap.
 
