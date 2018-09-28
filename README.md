@@ -41,7 +41,7 @@ Note that reflexive arrows are not drawn on the visualization but are still bein
   Additionally, you can add any combination (or none) of "reflexive", "symmetric", and "transitive" (no quotes) after your formula and any optional flags in order to impose restrictions on the frame's relations.
   
 # Uses
-There are quite a few uses of this program. One such use is to prove formulas -- if you want to prove <phi> on some frame, simply determine whether ~<phi> is satisfiable on that frame, as if it is not, then it must hold that phi is valid on all models based on that frame.
+There are quite a few uses of this program. One such use is to prove formulas -- if you want to prove `phi` on some frame, simply determine whether ~`phi` is satisfiable on that frame, as if it is not, then it must hold that `phi` is valid on all models based on that frame.
 
 For instance, let's look at this instance of the 4 axiom, pretending we don't know anything about it: <><>p -> <>p
 Maybe we want to start by seeing if this is satisfiable on unrestricted frames...
